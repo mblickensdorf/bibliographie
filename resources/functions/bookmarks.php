@@ -100,6 +100,7 @@ function bibliographie_bookmarks_print_html ($pub_id) {
 		}
 
 		$str .= '&nbsp;<a href="javascript:;" onclick="bibliographie_publications_export_choose_type(\''.bibliographie_publications_cache_list(array($pub_id)).'\')">'.bibliographie_icon_get('page-white-go', 'Export publication').'</a>';
+		$str .= '&nbsp;<a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/publications/?task=showPublication&pub_id=' . $pub_id . '">' . bibliographie_icon_get('page-white-edit', 'Edit publication') . '</a>';
 
 		$str .= '</div>';
 	}
