@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
 	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />  <!-- setting html page coding type -->
+		
 		<title>bibliographie | bibliographie</title>
-		<!-- test -->
+
 		<link rel="shortcut icon" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" />
 		<link rel="icon" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" />
 
@@ -94,6 +96,9 @@
 			<div id="content">
 <?php
 bibliographie_history_parse();
+
+header("Content-Type: text/html;charset=utf-8"); //setting php-page coding type
+echo "<!-- ttt -->"
 ?>
 
 				<script type="text/javascript">
