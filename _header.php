@@ -2,7 +2,7 @@
 <html lang="de">
 	<head>
 		<title>bibliographie | bibliographie</title>
-
+		<!-- test -->
 		<link rel="shortcut icon" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" />
 		<link rel="icon" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" />
 
