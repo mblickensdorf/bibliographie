@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />  <!-- setting html page coding type -->
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />  <!-- setting page coding type -->
 		
 		<title>bibliographie | bibliographie</title>
 
@@ -47,22 +47,33 @@
 
 		<div id="wrapper">
 			<div id="header">
-				<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/" method="get" id="search">
-					<div>
-						<div id="complexSearches">
-							<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/?task=authorSets">Search author sets</a>
-						</div>
+				<table border="0px" style="width: 100%;padding:3px">
+					<tr>
+						<td>
+							<h1>
+								<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>"><img src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" height="32" width="32" />ibliographie</a>
+							</h1>
+							<div id="mouse_movement"></div>
 
-						<input type="hidden" name="task" value="simpleSearch" />
-						<input type="text" id="q" name="q" style="width: 50%" placeholder="<?php echo htmlspecialchars($_GET['q'])?>" />
-						<button id="searchSubmit"><?php echo bibliographie_icon_get('find')?></button>
-					</div>
-				</form>
-
-				<h1>
-					<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>"><img src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/css/favicon.png" type="image/png" height="32" width="32" />ibliographie</a>
-				</h1>
-				<div id="mouse_movement"></div>
+						</td>
+						<td>
+							<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/" method="get" id="search">
+								<input type="hidden" name="task" value="simpleSearch" />
+								<input type="text" id="q" name="q" style="width: 69%" placeholder="<?php echo htmlspecialchars($_GET['q'])?>" />
+								<button id="searchSubmit"><?php echo bibliographie_icon_get('find')?></button>
+							</form>
+						</td>
+						<td>
+							<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/" method="get" id="search">
+								<input type="hidden" name="task" value="authorSets" />
+								<button id="searchAuthorsSet"><?php echo bibliographie_icon_get('group')?></button>
+							</form>
+				
+							<!--<a id="searchAuthorsSet" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/?task=authorSets"><button><?php echo bibliographie_icon_get('group')?></button></a>
+							-->
+						</td>
+					</tr>
+				</table>
 			</div>
 
 			<div id="menu">
@@ -97,7 +108,7 @@
 <?php
 bibliographie_history_parse();
 
-header("Content-Type: text/html;charset=utf-8"); //setting php-page coding type
+header("Content-Type: text/html;charset=utf-8"); //setting page coding type
 echo "<!-- ttt -->"
 ?>
 
