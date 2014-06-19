@@ -1,3 +1,10 @@
+window.onload = function(){		
+	$('#editbox').hide();
+	$('#hideeditbutton').hide();
+	$('#pubbox').hide();
+	$('#hidepubbutton').hide();									
+};
+
 function bibliographie_topics_toggle_visibility_of_subtopics (topic_id, repeat_id) {
 	if($('#topic_'+topic_id+'_'+repeat_id+'_subtopics').is(':visible')){
 		$('#topic_'+topic_id+'_'+repeat_id+'_subtopics').hide();

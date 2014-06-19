@@ -186,8 +186,10 @@ switch ($_GET['task']) {
         $family = array_merge(array($topic->topic_id), bibliographie_topics_get_parent_topics($topic->topic_id, true));
         $lockedTopics = bibliographie_topics_get_locked_topics();
         if (is_array($lockedTopics) and count(array_intersect($family, $lockedTopics)) == 0)
+		//header
           echo '<em style="float: right;">',
-          '<a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor&amp;topic_id=' . $topic->topic_id . '">' . bibliographie_icon_get('folder-edit') . ' Edit topic</a>',
+// the old edit button, is now inlcudes somewhere below
+//          '<a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor&amp;topic_id=' . $topic->topic_id . '">' . bibliographie_icon_get('folder-edit') . ' Edit topic</a>',
           ' <a href="javascript:;" onclick="bibliographie_topics_confirm_delete(' . $topic->topic_id . ');">' . bibliographie_icon_get('folder-delete') . ' Delete topic</a>',
           '</em>';
         else
@@ -200,12 +202,42 @@ switch ($_GET['task']) {
         if (!empty($topic->description))
           echo '<p>' . htmlspecialchars($topic->description) . '</p>';
         ?>
-
+		<!-- show publications and show including all subtopics -->
         <p>
-          <a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT ?>/topics/?task=showPublications&amp;topic_id=<?php echo (int) $topic->topic_id ?>">
-            <?php echo bibliographie_icon_get('page-white-stack') ?> Show publications
-          </a>
-          (<?php echo count(bibliographie_topics_get_publications($topic->topic_id, false)) ?>)
+          <?php echo count(bibliographie_topics_get_publications($topic->topic_id, false)) ?> Publications in this topic
+          <!-- start of showpublications area -->
+								<!-- the two buttons -->
+          						<a id="hidepubbutton" onclick="		
+									$('#pubbox').hide();
+									$('#hidepubbutton').hide();	
+									$('#showpubbutton').show();	
+									"><?php echo bibliographie_icon_get('bullet-toggle-minus') ?></a>
+								<a id="showpubbutton" onclick="
+									$('#pubbox').show();
+									$('#hidepubbutton').show();	
+									$('#showpubbutton').hide();
+								   "><?php echo bibliographie_icon_get('bullet-toggle-plus') ?></a>
+		 <!-- the surrounding div -->
+		  <div id="pubbox" style="background-color:#F8F8F8;">
+			  <?php
+			  $topic = bibliographie_topics_get_data($_GET['topic_id']);
+			  if ($topic) {
+				$includeSubtopics = '';
+				$title = '';
+				if ($_GET['includeSubtopics'] == 1) {
+				  $includeSubtopics = '&includeSubtopics=1';
+				  $title = ' and subtopics';
+				}
+				echo bibliographie_publications_print_list(
+				  bibliographie_topics_get_publications($topic->topic_id, (bool) $_GET['includeSubtopics']), BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . ((int) $_GET['topic_id']) . $includeSubtopics
+				);
+			  }
+			  ?>
+		  </div>
+          <!-- end of show publications area -->
+          
+          
+          
           <?php
           if (count(bibliographie_topics_get_subtopics($topic->topic_id, true)) > 0) {
             ?>
@@ -219,6 +251,7 @@ switch ($_GET['task']) {
           ?>
 
         </p>
+        <!-- show parent topics -->
         <?php
         $parentTopics = bibliographie_topics_get_parent_topics($topic->topic_id);
         if (count($parentTopics) > 0) {
@@ -237,12 +270,14 @@ switch ($_GET['task']) {
 
         if (count(bibliographie_topics_get_subtopics($topic->topic_id, true)) > 0) {
           ?>
-
+		<!-- open/close all subtopics-->
           <span style="float: right">
             <a href="javascript:;" onclick="bibliographie_topics_toggle_visiblity_of_all(true)">Open</a>
             <a href="javascript:;" onclick="bibliographie_topics_toggle_visiblity_of_all(false)">Close</a>
             all subtopics
           </span>
+          
+        <!-- subordinated topics-->
           <h4>Subordinated topics</h4>
           <div class="bibliographie_topics_topic_graph"><?php bibliographie_topics_traverse($topic->topic_id); ?></div>
           <?php
@@ -252,10 +287,189 @@ switch ($_GET['task']) {
         if (is_array($tags) and count($tags) > 0) {
           ?>
 
-          <h4>Publications have the following tags</h4>
+
+		<!-- tagcloud -->
+          <h4>Publications have the following tagsSS</h4>
           <?php
           bibliographie_tags_print_cloud($tags, array('topic_id' => $topic->topic_id));
         }
+        
+		?>
+		
+		<!-- edit area -->
+		<h4>Edit Topic 		
+									<a id="hideeditbutton" onclick="		
+									$('#editbox').hide();
+									$('#hideeditbutton').hide();	
+									$('#showeditbutton').show();	
+									"
+									><?php echo bibliographie_icon_get('bullet-toggle-minus') ?></a>
+								<a id="showeditbutton" onclick="
+									$('#editbox').show();
+									$('#hideeditbutton').show();	
+									$('#showeditbutton').hide();
+								   "><?php echo bibliographie_icon_get('bullet-toggle-plus') ?></a>
+		
+		</h4>
+
+		<div id="editbox">
+
+			<?php
+			// start of the editing area
+			$done = false;
+			$topic = null;
+
+			if (!empty($_GET['topic_id']) and !in_array($_GET['topic_id'], bibliographie_topics_get_locked_topics())){
+			  $topic = (array) bibliographie_topics_get_data($_GET['topic_id']);
+			}
+			
+//check if history should be saved in here !
+			if (is_array($topic)){
+			  bibliographie_history_append_step('topics', 'Editing topic ' . $topic['name']);
+			} else {
+			  bibliographie_history_append_step('topics', 'Topic editor');
+			}
+			if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+			  if (is_array($topic)) {
+				$_POST = $topic;
+				$topics = bibliographie_topics_get_parent_topics($_GET['topic_id']);
+				if (is_array($topics) and count($topics) > 0)
+				  $_POST['topics'] = implode(',', $topics);
+			  } else {
+				$_POST['topics'] = 1;
+			  }
+			}
+			if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			  $errors = array();
+			  if (empty($_POST['name'])){
+				$errors[] = 'You did not fill a name!';
+			  }
+			  if (!empty($_POST['url']) and !is_url($_POST['url'])){
+				$errors[] = 'The URL you filled is not valid.';
+			  }
+			  $topics = csv2array($_POST['topics']);
+			  if (count($errors) == 0) {
+				if (is_array($topic)) {
+				  if (bibliographie_topics_edit_topic($topic['topic_id'], $_POST['name'], $_POST['description'], $_POST['url'], $topics)) {
+					echo '<p class="success">Topic has been edited.</p>';
+					echo 'You can <a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor&amp;topic_id=' . $topic['topic_id'] . '">return to the editor</a> or view the <a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showTopic&amp;topic_id=' . $topic['topic_id'] . '">topic page</a>.';
+					$done = true;
+				  } else {
+					echo '<p class="success">Topic could not be edited.</p>';
+				  }
+				}else {
+				  if (bibliographie_topics_create_topic($_POST['name'], $_POST['description'], $_POST['url'], $topics)) {
+					echo '<p class="success">Topic has been created.</p>';
+					$done = true;
+				  }
+				  else
+					echo '<p class="error">Topic could not be created!</p>';
+				}
+			  } else { 
+				bibliographie_print_errors($errors);
+			  }
+			}
+			//start part 2
+			if (!$done) {
+			  $prePopulateTopics = array();
+
+			  /**
+			   * Fill the prePropulateTopics array.
+			   */
+			  if (!empty($_POST['topics'])) {
+				if (preg_match('~[0-9]+(\,[0-9]+)*~', $_POST['topics'])) {
+				  $topics = csv2array($_POST['topics'], 'int');
+				  foreach ($topics as $parentTopic) {
+					$prePopulateTopics[] = array(
+					  'id' => $parentTopic,
+					  'name' => bibliographie_topics_parse_name($parentTopic)
+					);
+				  }
+				}
+			  }
+			  ?>
+
+			  <p class="notice">
+				  Here you can edit the topic. Just fill at least the field for the name and hit save!</p>
+			  <?php
+			  if (is_array($topic)) {
+				?>
+
+				<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor&amp;topic_id=' . $topic['topic_id'] ?>" method="post">
+				  <?php
+				} else {
+				  ?>
+
+				  <form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor' ?>" method="post">
+					<?php
+				  }
+				  ?>
+
+				  <div class="unit">
+					<div style="float: right; width: 50%">
+					  <label for="url" class="block">URL</label>
+					  <input type="text" id="url" name="url" value="<?php echo htmlspecialchars($_POST['url']) ?>" style="width: 100%" />
+					</div>
+
+					<label for="name" class="block"><?php echo bibliographie_icon_get('asterisk-yellow') ?> Name</label>
+					<input type="text" id="name" name="name" value="<?php echo htmlspecialchars($_POST['name']) ?>" style="width: 45%" />
+
+					<div id="similarNameContainer" class="bibliographie_similarity_container"></div>
+				  </div>
+
+				  <div class="unit">
+					<label for="description" class="block">Description</label>
+					<textarea id="description" name="description" rows="6" cols="40" style="width: 100%"><?php echo htmlspecialchars($_POST['description']) ?></textarea>
+				  </div>
+
+				  <div class="unit">
+					<label for="topics" class="block">Parent topics</label>
+					<div id="topicsContainer" style="background: #fff; border: 1px solid #aaa; color: #000; float: right; font-size: 0.8em; padding: 5px; width: 45%;"><em>Search for a topic in the left container!</em></div>
+					<input type="text" id="topics" name="topics" style="width: 100%" value="<?php echo htmlspecialchars($_POST['topics']) ?>" />
+					<br style="clear: both" />
+				  </div>
+
+				  <div class="submit">
+					<input type="submit" value="save" />
+				  </div>
+				</form>
+
+				<script type="text/javascript">
+				  /* <![CDATA[ */
+				  var topic_id = <?php
+			  if (is_array($topic))
+				echo $topic['topic_id'];
+			  else
+				echo 0;
+			  ?>;
+
+				  $(function() {
+					bibliographie_topics_input_tokenized('topics', 'topicsContainer', <?php echo json_encode($prePopulateTopics) ?>);
+
+					$('#name').bind('mouseup keyup', function() {
+					  delayRequest('bibliographie_topics_check_name', Array($('#name').val(), topic_id));
+					});
+
+					$('#content input, #content textarea').charmap();
+				  });
+				  /* ]]> */
+				</script>
+				<?php
+				bibliographie_charmap_print_charmap();
+			  }
+			
+			
+			?>
+			
+			
+		</div>
+		
+		
+		
+		
+		
+		<?php
+  
       }
       break;
 
