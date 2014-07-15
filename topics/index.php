@@ -11,16 +11,11 @@ switch ($_GET['task']) {
     if (is_object($topic)) {
       $parentTopics = bibliographie_topics_get_parent_topics($topic->topic_id);
       $subTopics = bibliographie_topics_get_subtopics($topic->topic_id);
-
-      if (count($parentTopics) == 0 and count($subTopics) == 0) {
-        if (bibliographie_topics_delete($topic->topic_id))
-          echo '<p class="success">The topic has been deleted!</p>';
-        else
-          echo '<p class="error">An error occurred!</p>';
-      }
-      else
-        echo '<p class="error"><em>' . bibliographie_topics_parse_name($topic->topic_id) . '</em> has parent- or subtopics and can therefore not be deleted!</p>';
-    }
+      if (bibliographie_topics_delete($topic->topic_id))
+		echo '<p class="success">The topic has been deleted!</p>';
+	  else
+        echo '<p class="error">An error occurred!</p>';
+     }
     break;
 
   case 'topicEditor':
@@ -188,8 +183,6 @@ switch ($_GET['task']) {
         if (is_array($lockedTopics) and count(array_intersect($family, $lockedTopics)) == 0)
 		//header
           echo '<em style="float: right;">',
-// the old edit button, is now inlcudes somewhere below
-//          '<a href="' . BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=topicEditor&amp;topic_id=' . $topic->topic_id . '">' . bibliographie_icon_get('folder-edit') . ' Edit topic</a>',
           ' <a href="javascript:;" onclick="bibliographie_topics_confirm_delete(' . $topic->topic_id . ');">' . bibliographie_icon_get('folder-delete') . ' Delete topic</a>',
           '</em>';
         else
