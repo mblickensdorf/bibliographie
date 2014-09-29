@@ -470,6 +470,81 @@ function bibliographie_publications_parse_list(array $publications, $type = 'htm
  * @param array $publications
  * @param array $options
  */
+function bibliographie_publications_print_list2(array $publications, $baseLink = '', array $options = array()) {
+  $return = (string) '';
+  if (count($publications) > 0) {
+    if (!empty($_GET['orderBy']))
+      $options['orderBy'] = $_GET['orderBy'];
+
+    $options = bibliographie_options_compare(
+      array(
+      'onlyPublications' => (bool) false,
+      'bookmarkingLink' => (bool) true,
+      'orderBy' => array(
+        'default' => (string) 'year',
+        'possible' => array(
+          'year',
+          'title'
+        )
+      )
+      ), $options
+    );
+
+    // Clear gaps between array indices...
+    $publications = bibliographie_publications_sort($publications, $options['orderBy']);
+
+    // Apply bookmark batch operations...
+    if ($_GET['bookmarkBatch'] == 'add')
+      $return .= '<p class="notice">' . bibliographie_bookmarks_set_bookmarks_for_list($publications) . ' publications have been bookmarked!.</p>';
+    elseif ($_GET['bookmarkBatch'] == 'remove')
+      $return .= '<p class="notice">The bookmarks of ' . bibliographie_bookmarks_unset_bookmarks_for_list($publications) . ' publications were deleted!</p>';
+
+    $pageData = bibliographie_pages_calculate(count($publications));
+    $return .= bibliographie_pages_print($pageData, bibliographie_link_append_param($baseLink, 'orderBy=' . $options['orderBy']));
+    $exportHash = bibliographie_publications_cache_list($publications);
+
+    if (!$options['onlyPublications'] and count($publications) > 1) {
+      $return .= '<span style="float: left">List contains <strong>' . count($publications) . ' publication</strong>(s)...</span>';
+    }
+
+    $cutter = null;
+    for ($i = $pageData['offset']; $i < $pageData['ceiling']; $i++) {
+      $publication = (array) bibliographie_publications_get_data($publications[$i]);
+
+      if (!$options['onlyPublications'] and count($publications) > 1) {
+        if ($options['orderBy'] == 'year' and $cutter != $publication['year']) {
+          $cutter = $publication['year'];
+          $return .= '<h4>Publications in ' . ((int) $cutter) . '</h4>';
+        } elseif ($options['orderBy'] == 'title' and $cutter != mb_strtoupper(mb_substr($publication['title'], 0, 1))) {
+          $cutter = mb_substr($publication['title'], 0, 1);
+          $return .= '<h4>Publications that start with ' . $cutter . '</h4>';
+        }
+      }
+
+      $return .= '<div id="publication_container_' . ((int) $publication['pub_id']) . '" class="bibliographie_publication';
+      if (bibliographie_bookmarks_check_publication($publication['pub_id']))
+        $return .= ' bibliographie_publication_bookmarked';
+      $return .= '">' . bibliographie_bookmarks_print_html($publication['pub_id']);
+      $return .= bibliographie_publications_parse_data($publication['pub_id']) . '</div>';
+    }
+
+    $return .= bibliographie_pages_print($pageData, bibliographie_link_append_param($baseLink, 'orderBy=' . $options['orderBy']));
+
+    bibliographie_bookmarks_print_javascript();
+  }
+  else
+    $return .= '<p class="error">List of publications is empty...</p>';
+
+  return $return;
+}
+
+
+
+/**
+ * Print a list of publications.
+ * @param array $publications
+ * @param array $options
+ */
 function bibliographie_publications_print_list(array $publications, $baseLink = '', array $options = array()) {
   $return = (string) '';
   if (count($publications) > 0) {

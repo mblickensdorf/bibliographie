@@ -221,8 +221,12 @@ switch ($_GET['task']) {
 				  $includeSubtopics = '&includeSubtopics=1';
 				  $title = ' and subtopics';
 				}
+				
+				$array = bibliographie_topics_get_publications($topic->topic_id, (bool) $_GET['includeSubtopics']);
+				
+				echo $array[0];
 				echo bibliographie_publications_print_list(
-				  bibliographie_topics_get_publications($topic->topic_id, (bool) $_GET['includeSubtopics']), BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . ((int) $_GET['topic_id']) . $includeSubtopics
+				  $array, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . ((int) $_GET['topic_id']) . $includeSubtopics
 				);
 			  }
 			  ?>

@@ -40,6 +40,7 @@
 		<script type="text/javascript" src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/functions/publications.js"></script>
 		<script type="text/javascript" src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/functions/tags.js"></script>
 		<script type="text/javascript" src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/functions/topics.js"></script>
+		<script type="text/javascript" src="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/resources/functions/esearch.js"></script>
 	</head>
 
 	<body id="top">
@@ -84,6 +85,8 @@
 				<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/bookmarks/?task=showBookmarks"><?php echo bibliographie_icon_get('star')?> Bookmarks</a>
 				<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/tags/?task=showCloud"><?php echo bibliographie_icon_get('tag-blue')?> Tags</a>
 				<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/notes/?task=showNotes"><?php echo bibliographie_icon_get('note')?> Notes</a>
+				<h3><?php echo bibliographie_icon_get('find')?> Search</h3>
+				<a href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/esearch/?task=start"><?php echo bibliographie_icon_get('sitemap')?> Search Content</a>
 
 
 				<h3><?php echo bibliographie_icon_get('add')?> Add data</h3>
