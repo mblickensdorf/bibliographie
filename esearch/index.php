@@ -48,6 +48,7 @@ switch ($_GET['task']) {
 		
 		if($_GET['fuzzy']=='1'){
 			$searchParams['body']['query']['bool']['should']['fuzzy']['_all'] = $_GET['query'];	//fuzzy search
+			//sometimes exact search finds better things than fuzzy. e.g. query "german"
 		} else {
 			$searchParams['body']['query']['match']['_all']['query'] = $_GET['query'];			//exact search
 		}
@@ -85,53 +86,70 @@ switch ($_GET['task']) {
 				array_push($tags, $source['tag_id']);
 				array_push($tags_name, $source['tag']);
 			}
+			if(array_key_exists('tag_id',$source)){
+				$oldarray = $tags;
+				array_push($tags, $source['tag_id']);
+				$newarray = array_unique($tags);
+				if(sizeof($oldarray) == sizeof($newarray)){					//check if new added entry is a doubling
+					$tags = $newarray;
+					array_push($tags_name, $source['tag']);
+				}				
+
+			}
+			
 			if(array_key_exists('author_id',$source)){
-				array_push($authors, $source['author_id']);				
-				array_push($authors_firstname, $source['firstname']);
-				array_push($authors_lastname, $source['surname']);	
+				$oldarray = $authors;
+				array_push($authors, $source['author_id']);
+				$newarray = array_unique($authors);
+				if(sizeof($oldarray) == sizeof($newarray)){					//check if new added entry is a doubling
+					$authors = $newarray;
+					array_push($authors_firstname, $source['firstname']);
+					array_push($authors_lastname, $source['surname']);	
+				}				
+
 			}
 
 		}
+		
 
-
-		$topics_content = "<span style='font-size:large;'>List contains <b>".sizeof($topics)." Topics</b></span>";
+		$topics_content = "<span style='font-size:larger;'>List contains <b>".sizeof($topics)." Topics</b></span>";
 		for($i = 0; $i < sizeof($topics);$i++){
 			$topics_content = $topics_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/topics/?task=showTopic&topic_id=".$topics[$i]."'>".$topics_name[$i]."</a>";
 		}
 		
-		$tags_content = "<span style='font-size:large;'>List contains <b>".sizeof($tags)." Tags</b></span>";
+		$tags_content = "<span style='font-size:larger;'>List contains <b>".sizeof($tags)." Tags</b></span>";
 		for($i = 0; $i < sizeof($tags);$i++){
 			$tags_content = $tags_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/tags/?task=showTag&tag_id=".$tags[$i]."'>".$tags_name[$i]."</a>";
 		}
-		$authors_content = "<span style='font-size:large;'>List contains <b>".sizeof($authors)." Authors</b></span>";
+		$authors_content = "<span style='font-size:larger;'>List contains <b>".sizeof($authors)." Authors</b></span>";
 		for($i = 0; $i < sizeof($authors);$i++){
 			$authors_content = $authors_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/authors/?task=showAuthor&author_id=".$authors[$i]."'>".$authors_firstname[$i]." ".$authors_lastname[$i]."</a>";
 		}
 		echo "
 		<table style='box-shadow: 5px 5px 5px #AAAAAA;padding: 5px;    margin-left: auto;margin-right: auto;'><tr>
-		<td id='PubListBox' class='active_cell' onmouseover='showLink()'>".sizeof($pubs)." Hits in Publications</td>
-		<td id='PubListBox' class='inactive_cell'>".sizeof($topics)." Hits in Topics</td>
-		<td id='PubListBox' class='inactive_cell'>".sizeof($tags)." Hits in Tags</td>
-		<td id='PubListBox' class='inactive_cell'>".sizeof($authors)." Hits in Authors</td>
+		<td id='PubListBox' class='active_cell' onclick='showSearchPub()'>".sizeof($pubs)." Hits in Publications</td>
+		<td id='TopListBox' class='inactive_cell' onclick='showSearchTop()'>".sizeof($topics)." Hits in Topics</td>
+		<td id='TagListBox' class='inactive_cell' onclick='showSearchTag()'>".sizeof($tags)." Hits in Tags</td>
+		<td id='AuthorsListBox' class='inactive_cell' onclick='showSearchAuthor()'>".sizeof($authors)." Hits in Authors</td>
 		</tr></table>
 		
 		<br>
 		<div id='PubList'>
 		".
-		bibliographie_publications_print_list2($pubs, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . 77777 . '&includeSubtopics=1')
+		bibliographie_publications_print_noorder($pubs, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . 77777 . '&includeSubtopics=1')
 
 		."
-		</div><br><hr>
+		</div>
 		<div id='TopList'>
 		".
 		$topics_content
 		."
-		</div><br><hr>
+		</div>
 		<div id='TagList'>
 		".
 		$tags_content
 		."
-		</div><br><hr>
+		</div>
 		<div id='AuthorList'>
 		".
 		$authors_content
