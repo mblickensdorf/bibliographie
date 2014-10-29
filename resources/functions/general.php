@@ -166,6 +166,15 @@ function bibliographie_icon_get ($name, $title = '') {
 }
 
 /**
+ * Give the HTML-snippet for an css-sprite icon.
+ * @param string $name Identification of the icon.
+ * @return string HTML-snippet
+ */
+function bibliographie_icon_get_big ($name, $title = '') {
+	return '<span class="silk-icon-big silk-icon-big-'.htmlspecialchars($name).'" title="'.htmlspecialchars($title).'"> </span>';
+}
+
+/**
  * Write an action into the log.
  * @param string $category The category the action was done in.
  * @param string $action The action itself.

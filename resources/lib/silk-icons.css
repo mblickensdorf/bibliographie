@@ -4,6 +4,13 @@
     background-repeat:no-repeat; height:16px; width:16px; overflow:hidden; margin:0 1px;
     /*display:-moz-inline-box;Firefox 2.x support*/ display:inline-block; vertical-align:middle;
  }
+ 
+ .silk-icon-big
+{
+    background-image:url('silk-icons_32.png');
+    background-repeat:no-repeat; height:32px; width:32px; overflow:hidden; margin:0 1px; 
+    /*display:-moz-inline-box;Firefox 2.x support*/ display:inline-block; vertical-align:middle;
+ }
 /* IE6 Icon Support since PNG Transparency is not supported by IE6*/
 * html .silk-icon {background-image:url('silk-icons.gif');}
 
@@ -158,6 +165,8 @@
 .silk-icon-bullet-star{background-position:0 -2368px;}
 .silk-icon-bullet-toggle-minus{background-position:0 -2384px;}
 .silk-icon-bullet-toggle-plus{background-position:0 -2400px;}
+.silk-icon-big-bullet-toggle-minus{background-position:0 -4768px;}
+.silk-icon-big-bullet-toggle-plus{background-position:0 -4800px;}
 .silk-icon-bullet-white{background-position:0 -2416px;}
 .silk-icon-bullet-wrench{background-position:0 -2432px;}
 .silk-icon-bullet-yellow{background-position:0 -2448px;}

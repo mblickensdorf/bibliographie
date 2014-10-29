@@ -204,12 +204,12 @@ switch ($_GET['task']) {
 									$('#pubbox').hide();
 									$('#hidepubbutton').hide();	
 									$('#showpubbutton').show();	
-									"><?php echo bibliographie_icon_get('bullet-toggle-minus') ?></a>
+									"><?php echo bibliographie_icon_get_big('bullet-toggle-minus') ?></a>
 								<a id="showpubbutton" onclick="
 									$('#pubbox').show();
 									$('#hidepubbutton').show();	
 									$('#showpubbutton').hide();
-								   "><?php echo bibliographie_icon_get('bullet-toggle-plus') ?></a>
+								   "><?php echo bibliographie_icon_get_big('bullet-toggle-plus') ?></a>				   
 		 <!-- the surrounding div -->
 		  <div id="pubbox" style="background-color:#F8F8F8;">
 			  <?php
@@ -300,12 +300,12 @@ switch ($_GET['task']) {
 									$('#hideeditbutton').hide();	
 									$('#showeditbutton').show();	
 									"
-									><?php echo bibliographie_icon_get('bullet-toggle-minus') ?></a>
+									><?php echo bibliographie_icon_get_big('bullet-toggle-minus') ?></a>
 								<a id="showeditbutton" onclick="
 									$('#editbox').show();
 									$('#hideeditbutton').show();	
 									$('#showeditbutton').hide();
-								   "><?php echo bibliographie_icon_get('bullet-toggle-plus') ?></a>
+								   "><?php echo bibliographie_icon_get_big('bullet-toggle-plus') ?></a>
 		
 		</h4>
 
@@ -510,6 +510,8 @@ switch ($_GET['task']) {
         <a href="javascript:;" onclick="bibliographie_topics_toggle_visiblity_of_all(true)"><?php echo bibliographie_icon_get('bullet-toggle-plus') ?> Open</a>
         <a href="javascript:;" onclick="bibliographie_topics_toggle_visiblity_of_all(false)"><?php echo bibliographie_icon_get('bullet-toggle-minus') ?> Close</a>
         all subtopics
+        <a href="javascript:;" onclick="bibliographie_topics_toggle_visibility_of_topicID()">show Topic IDs</a>
+
       </span>
 
       <h3><?php echo $bibliographie_title ?></h3>
