@@ -56,25 +56,6 @@ Those two steps depend on your environment. (e.g. you don't need to take care of
 
 Access the app via a browser at the path you've set in the config file earlier. Follow the instructions to convert/create the database scheme.
 
-## 4. Installing and configuring of search system ##
-
-First you have to install ElasticSearch from http://www.elasticsearch.org/ . Then you need to install the Java Databaseconnector (JDBC) from https://github.com/jprante/elasticsearch-river-jdbc . Then the db content must be initialized from Elastic Search. There are various ways e.g. with curl or http://voormedia.com/blog/2014/06/four-ways-to-index-relational-data-in-elasticsearch
-with curl:
-```
-curl -XPUT localhost:9200/_river/product/_meta -d '
-  {
-    "type": "jdbc",
-    "jdbc": {
-      "user": "user",
-      "password": "pass",
-      "url" : "jdbc:mysql://localhost:3306/bib_db",
-      "sql" : "select * from a2author"
-    }
-  }'
-```
-Then you have to install php composer like http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/current/_quickstart.html .
-
-
 ## Reach the finish line ##
 
 All done... You can now start using bibliographie...

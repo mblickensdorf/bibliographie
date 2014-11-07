@@ -593,7 +593,7 @@ function bibliographie_topics_traverse ($topic_id, $depth = 1, &$walkedBy = arra
 				$walkedBy[$topic->topic_id]++;
 			//missing is the printing of parent topics with id....did not find the line....
 			if($usage == 'print')
-				$topic->name = '<a href="'.BIBLIOGRAPHIE_WEB_ROOT.'/topics/?task=showTopic&topic_id='.$topic->topic_id.'">'.$topic->name.'</a> DB-ID: ' . $topic->topic_id;
+				$topic->name = '<a href="'.BIBLIOGRAPHIE_WEB_ROOT.'/topics/?task=showTopic&topic_id='.$topic->topic_id.'">'.$topic->name.'</a><span class="topicID"> DB-ID: ' . $topic->topic_id. "</span>";
 			else
 				$topic->name = '<a href="javascript:;" onclick="$(\'#topics\').tokenInput(\'add\', {id:\''.$topic->topic_id.'\',name:\''.$topic->name.'\'})"><span class="silk-icon silk-icon-add"></span></a> '.$topic->name;
 
