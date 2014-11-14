@@ -7,25 +7,39 @@ require '../init.php';
 <form action="index.php" method="get">
 <table border='0' align="center">
 	<tr>
-		<th>Query</th><th>Options</th>
+		<th>Query</th><th>Modifiers</th>
 	</tr>
 	<tr valign="top" cellspacing="10" cellpadding="20">
 		<td>
+			<?php
+			if(empty($_GET['start'])){
+				$start = '0';
+			} else {
+				$start = $_GET['start'];
+			}
+			if(empty($_GET['end'])){
+				$end = '100';
+			} else {
+				$end = $_GET['end'];
+			}
 			
-			<input type="text" name="query" value="<?php echo $_GET['query'] ?>" size="20"><br>
+			?>
+			<input type="text" name="query" value="<?php echo $_GET['query'] ?>" size="30"><br>
+			Show Hits<input type="text" name="start" value="<?php echo $start ?>" size="3">
+			 to<input type="text" name="end" value="<?php echo $end ?>" size="3"><br>
 		</td>
 		<td>
+		Allowd modifiers are<b> AND</b>, <b>OR</b>, <b>NOT</b>.<br>
+		<b>query~1</b> == Fuzzy Search with max distance 1<br>
+		<b>/query/</b> == <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax">regular expressions</a> in query allowed<br>
+		<b>+query query2</b> == query1 must be in hit, query 2 can be<br>
+		<b>"query1 query2"</b> == search sentence<br>
+		<b>query1^4 query2</b> == query1 4 times more important<br>
+		<b>field:query</b> == search in field (e.g. surname, firstname, year, pub_type, volume, publisher, journal)<br>
+		The modifiers can be combined with brackets <b>(</b>,<b>)</b>.
+		
 			
-			<input type="radio" name="fuzzy" value="0" <?php if($_GET['fuzzy']=='0'){echo "checked";}?>>exact Search<br>
-			<input type="radio" name="fuzzy" value="1" <?php if($_GET['fuzzy']=='1' || $_GET['fuzzy']==""){echo "checked";}?>>fuzzy Search<br>
 		</td>
-<!--		<td>
-			<input type="checkbox" name="field" value="authors" checked=true>Authors<br>
-			<input type="checkbox" name="field" value="publications" checked=true>Publications<br>
-			<input type="checkbox" name="field" value="topics" checked=true>Topics<br>
-			<input type="checkbox" name="field" value="tags" checked=true>Tags<br>
-		</td>
--->
 	</tr>
 </table>
 <input type="hidden" name="task" value="search">
@@ -43,21 +57,22 @@ switch ($_GET['task']) {
 		require 'vendor/autoload.php';				//load the php-elastic search API
 		$client = new Elasticsearch\Client();		//create client
 		//define search parameters
-		$searchParams = []; 
-		$searchParams['index'] = 'jdbc';
-		$searchParams['type'] = 'jdbc';
-		
-		if($_GET['fuzzy']=='1'){
-			$searchParams['body']['query']['bool']['should']['fuzzy']['_all'] = $_GET['query'];	//fuzzy search
-			//sometimes exact search finds better things than fuzzy. e.g. query "german"
-		} else {
-			$searchParams['body']['query']['match']['_all']['query'] = $_GET['query'];			//exact search
-		}
+		$params = array( 	'index' =>"jdbc", 
+							'type' =>"jdbc", 
+							'body' => array( 
+								'query' => array(
+									'query_string' => array( 
+										'query' => $_GET['query'], 
+									),
+							
+								) 
+							) 
+						); 
+		$params['body']['sort'] = ['_score'];
+		$params['body']['size'] = 1000;
 
-		$searchParams['body']['sort'] = ['_score'];
-		$searchParams['body']['size'] = 1000;
 		// the actual query. Results are stored in a PHP array
-		$res = $client->search($searchParams);
+		$res = $client->search($params);
 		$hits = $res['hits']['hits'];
 		
 		
@@ -142,18 +157,27 @@ switch ($_GET['task']) {
 		}
 		$topics = $shorttopics;
 
+		//cut to length of max hits ($end)
+		$pubs = array_slice($pubs,$start,$end-$start + 1);
+		$topics = array_slice($topics,$start,$end);
+		$tags = array_slice($tags,$start,$end);
+		$authors = array_slice($authors,$start,$end);
+
+
+
+
 		//make output-strings from arrays
 		$topics_content = "<span style='font-size:larger;'>List contains <b>".sizeof($topics)." Topics</b></span>";
 		for($i = 0; $i < sizeof($topics);$i++){
-			$topics_content = $topics_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/topics/?task=showTopic&topic_id=".$topics[$i][0]."'>".$topics[$i][1]."</a>";
+			$topics_content = $topics_content . "<br>Hit: ".($i + intval($start))." <a href='".BIBLIOGRAPHIE_WEB_ROOT . "/topics/?task=showTopic&topic_id=".$topics[$i][0]."'>".$topics[$i][1]."</a>";
 		}	
 		$tags_content = "<span style='font-size:larger;'>List contains <b>".sizeof($tags)." Tags</b></span>";
 		for($i = 0; $i < sizeof($tags);$i++){
-			$tags_content = $tags_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/tags/?task=showTag&tag_id=".$tags[$i][0]."'>".$tags[$i][1]."</a>";
+			$tags_content = $tags_content . "<br>Hit: ".($i + intval($start))." <a href='".BIBLIOGRAPHIE_WEB_ROOT . "/tags/?task=showTag&tag_id=".$tags[$i][0]."'>".$tags[$i][1]."</a>";
 		}
 		$authors_content = "<span style='font-size:larger;'>List contains <b>".sizeof($authors)." Authors</b></span>";
 		for($i = 0; $i < sizeof($authors);$i++){
-			$authors_content = $authors_content . "<br><a href='".BIBLIOGRAPHIE_WEB_ROOT . "/authors/?task=showAuthor&author_id=".$authors[$i][0]."'>".$authors[$i][1]." ".$authors[$i][2]."</a>";
+			$authors_content = $authors_content . "<br>Hit: ".($i + intval($start))." <a href='".BIBLIOGRAPHIE_WEB_ROOT . "/authors/?task=showAuthor&author_id=".$authors[$i][0]."'>".$authors[$i][1]." ".$authors[$i][2]."</a>";
 		}
 		//print it all
 		echo "
@@ -167,7 +191,7 @@ switch ($_GET['task']) {
 		<br>
 		<div id='PubList'>
 		".
-		bibliographie_publications_print_noorder($pubs, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . 77777 . '&includeSubtopics=1')
+		bibliographie_publications_print_noorder($pubs, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . 77777 . '&includeSubtopics=1',array(),$start)
 
 		."
 		</div>

@@ -224,7 +224,6 @@ switch ($_GET['task']) {
 				
 				$array = bibliographie_topics_get_publications($topic->topic_id, (bool) $_GET['includeSubtopics']);
 				
-				echo $array[0];
 				echo bibliographie_publications_print_list(
 				  $array, BIBLIOGRAPHIE_WEB_ROOT . '/topics/?task=showPublications&topic_id=' . ((int) $_GET['topic_id']) . $includeSubtopics
 				);
@@ -286,7 +285,7 @@ switch ($_GET['task']) {
 
 
 		<!-- tagcloud -->
-          <h4>Publications have the following tagsSS</h4>
+          <h4>Publications have the following tags</h4>
           <?php
           bibliographie_tags_print_cloud($tags, array('topic_id' => $topic->topic_id));
         }
