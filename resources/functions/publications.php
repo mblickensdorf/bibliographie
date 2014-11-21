@@ -198,6 +198,7 @@ $bibliographie_publication_fields = array(
       'year'
     ),
     array(
+	  'author',
       'editor',
       'publisher',
       'volume',
