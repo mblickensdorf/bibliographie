@@ -61,17 +61,27 @@ Access the app via a browser at the path you've set in the config file earlier. 
 First you have to install ElasticSearch from http://www.elasticsearch.org/ . Then you need to install the Java Databaseconnector (JDBC) from https://github.com/jprante/elasticsearch-river-jdbc . Then the db content must be initialized from Elastic Search. There are various ways e.g. with curl or http://voormedia.com/blog/2014/06/four-ways-to-index-relational-data-in-elasticsearch
 with curl:
 ```
-curl -XPUT localhost:9200/_river/product/_meta -d '
- {
- "type": "jdbc",
- "jdbc": {
- "user": "user",
- "password": "pass",
- "url" : "jdbc:mysql://localhost:3306/bib_db",
- "sql" : "select * from a2author"
- }
- }'
+curl -XPUT 'localhost:9200/_river/my_jdbc_river/_meta' -d '{
+     "type" : "jdbc",
+     "jdbc" : {
+         "url" : "jdbc:mysql://localhost:3306/bib_db",
+         "user" : "user",
+         "password" : "pass",
+         "sql" : "select * from a2author",
+    	 "poll" : "6s",
+    	 "strategy" : "simple",
+	     "schedule" : "0 0-59 0-23 ? * *"
+    },
+    "index" : {
+         "index" : "invoiceitems",
+         "bulk_size" : 600,
+         "max_bulk_requests" : 10,
+         "bulk_timeout" : "5s",
+         "autocommit" : true
+    }
+}'
 ```
+You have to do this for each of the table you like to be indexed, e.g. publications, author, tags, topics
 Then you have to install php composer like http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/current/_quickstart.html .
 
 
