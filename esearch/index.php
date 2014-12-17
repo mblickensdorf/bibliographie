@@ -5,6 +5,7 @@ require '../init.php';
 <h2>Search</h2>
 
 <form action="index.php" method="get">
+	<!-- search parameters -->
 <table border='0' align="center">
 	<tr>
 		<th>Query</th><th>Modifiers</th>
@@ -27,16 +28,18 @@ require '../init.php';
 			<input type="text" name="query" value="<?php echo $_GET['query'] ?>" size="30"><br>
 			Show Hits<input type="text" name="start" value="<?php echo $start ?>" size="3">
 			 to<input type="text" name="end" value="<?php echo $end ?>" size="3"><br>
+			 
+			 <small>Newly created entries, are indexed after 1 minute.</small>
 		</td>
 		<td>
-		Allowd modifiers are<b> AND</b>, <b>OR</b>, <b>NOT</b>.<br>
-		<b>query~1</b> == Fuzzy Search with max distance 1<br>
-		<b>/query/</b> == <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax">regular expressions</a> in query allowed<br>
-		<b>+query query2</b> == query1 must be in hit, query 2 can be<br>
-		<b>"query1 query2"</b> == search sentence<br>
-		<b>query1^4 query2</b> == query1 4 times more important<br>
-		<b>field:query</b> == search in field (e.g. surname, firstname, year, pub_type, volume, publisher, journal)<br>
-		The modifiers can be combined with brackets <b>(</b>,<b>)</b>.
+			Allowd modifiers are<b> AND</b>, <b>OR</b>, <b>NOT</b>.<br>
+			<b>query~1</b> == Fuzzy Search with max distance 1<br>
+			<b>/query/</b> == <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax">regular expressions</a> in query allowed<br>
+			<b>+query query2</b> == query1 must be in hit, query 2 can be<br>
+			<b>"query1 query2"</b> == search sentence<br>
+			<b>query1^4 query2</b> == query1 4 times more important<br>
+			<b>field:query</b> == search in field (e.g. surname, firstname, year, pub_type, volume, publisher, journal)<br>
+			The modifiers can be combined with brackets <b>(</b>,<b>)</b>.
 		
 			
 		</td>
@@ -51,13 +54,17 @@ require '../init.php';
 <?php
 switch ($_GET['task']) {
 	case 'search':
+		// append search to 
+		bibliographie_history_append_step('search', 'Seaching' . htmlspecialchars($publication['title']));
+
+	
 		//print header
 		echo "<br><br><h2>Results</h2><hr>";
 		//init search client
 		require 'vendor/autoload.php';				//load the php-elastic search API
 		$client = new Elasticsearch\Client();		//create client
 		//define search parameters
-		$params = array( 	'index' =>"jdbc", 
+		$params = array( 	'index' =>"jdbc", 		//see also http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-queries.html
 							'type' =>"jdbc", 
 							'body' => array( 
 								'query' => array(
@@ -72,7 +79,7 @@ switch ($_GET['task']) {
 		$params['body']['size'] = 1000;
 
 		// the actual query. Results are stored in a PHP array
-		$res = $client->search($params);
+		$res = $client->search($params);		//execute search
 		$hits = $res['hits']['hits'];
 		
 		
@@ -106,11 +113,7 @@ switch ($_GET['task']) {
 			}
 
 		}
-		
-//		$pubs = array_unique($pubs);
-//		$authors = array_unique($authors);
-//		$tags = array_unique($tags);
-//		$topics = array_unique($topics);
+
 		//erase doubles
 		$shortauthors = array();
 		for($i = 0; $i < sizeof($authors);$i++){
@@ -159,9 +162,9 @@ switch ($_GET['task']) {
 
 		//cut to length of max hits ($end)
 		$pubs = array_slice($pubs,$start,$end-$start + 1);
-		$topics = array_slice($topics,$start,$end);
-		$tags = array_slice($tags,$start,$end);
-		$authors = array_slice($authors,$start,$end);
+		$topics = array_slice($topics,$start,$end-$start + 1);
+		$tags = array_slice($tags,$start,$end-$start + 1);
+		$authors = array_slice($authors,$start,$end-$start + 1);
 
 
 

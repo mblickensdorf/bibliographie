@@ -57,22 +57,6 @@
 							<div id="mouse_movement"></div>
 
 						</td>
-						<td>
-							<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/" method="get" id="search">
-								<input type="hidden" name="task" value="simpleSearch" />
-								<input type="text" id="q" name="q" style="width: 69%" placeholder="<?php echo htmlspecialchars($_GET['q'])?>" />
-								<button id="searchSubmit"><?php echo bibliographie_icon_get('find')?></button>
-							</form>
-						</td>
-						<td>
-							<form action="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/" method="get" id="search">
-								<input type="hidden" name="task" value="authorSets" />
-								<button id="searchAuthorsSet"><?php echo bibliographie_icon_get('group')?></button>
-							</form>
-				
-							<!--<a id="searchAuthorsSet" href="<?php echo BIBLIOGRAPHIE_WEB_ROOT?>/search/?task=authorSets"><button><?php echo bibliographie_icon_get('group')?></button></a>
-							-->
-						</td>
 					</tr>
 				</table>
 			</div>

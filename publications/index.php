@@ -4,7 +4,11 @@ require '../init.php';
 
 <h2>Publications</h2>
 <?php
+// depending on the $_GET['task'] variable, different contents are displayed
+
+
 switch ($_GET['task']) {
+	//case
 	case 'deleteAttachment':
 		bibliographie_history_append_step('attachments', 'Delete attachment', false);
 		echo '<h3>Delete attachment</h3>';
@@ -17,7 +21,7 @@ switch ($_GET['task']) {
 		}else
 			echo '<p class="error">Attachment was not found!</p>';
 		break;
-
+	//case
 	case 'deletePublication':
 		bibliographie_history_append_step('publications', 'Delete publication', false);
 		echo '<h3>Delete publication</h3>';
@@ -40,7 +44,7 @@ switch ($_GET['task']) {
 		}else
 			echo '<p class="error">Publication was not found!</p>';
 		break;
-
+	//case
 	case 'batchOperations':
 		$publications = bibliographie_publications_get_cached_list($_GET['list']);
 
@@ -225,7 +229,7 @@ switch ($_GET['task']) {
 		}else
 			echo '<h3 class="error">List was empty</h3><p>Sorry, but the list you provided was empty!</p>';
 		break;
-
+	//case
 	case 'showContainer':
 		if (in_array($_GET['type'], array('journal', 'book'))) {
 			bibliographie_history_append_step('publications', 'Showing ' . $_GET['type'] . ' "' . htmlspecialchars($_GET['container']) . '"');
@@ -278,7 +282,7 @@ ORDER BY
 			}
 		}
 		break;
-
+	//case
 	case 'showContainerPiece':
 		if (in_array($_GET['type'], array('journal', 'book'))) {
 			bibliographie_history_append_step('publications', 'Showing ' . $_GET['type'] . ' "' . htmlspecialchars($_GET['container']) . '"/' . ((int) $_GET['year']) . '/' . ((int) $_GET['piece']));
@@ -322,7 +326,7 @@ WHERE
 			}
 		}
 		break;
-
+	//case
 	case 'checkData':
 		/**
 		 * Unset yet checked prefetched data.
@@ -429,7 +433,7 @@ WHERE
 			break;
 		}else
 			echo '<p class="error">You did not fetch any data yet! You may want to do so now!</p>';
-
+	//case
 	case 'fetchData':
 		bibliographie_history_append_step('publications', 'Fetch data from external source');
 		unset($_SESSION['publication_prefetchedData_checked']);
@@ -465,7 +469,7 @@ WHERE
 		</script>
 		<?php
 		break;
-
+	//case
 	case 'publicationEditor':
 		$bibliographie_title = 'Publication editor';
 		$done = false;
@@ -819,7 +823,7 @@ WHERE
 			bibliographie_charmap_print_charmap();
 		}
 		break;
-
+	//case
 	case 'showPublication':
 		$publication = bibliographie_publications_get_data($_GET['pub_id']);
 
